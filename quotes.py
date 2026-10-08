@@ -7,3 +7,4 @@ QUOTES = [
 ]
 
 print(random.choice(QUOTES))
+oops
