@@ -6,4 +6,4 @@ QUOTES = [
     "Simplicity is prerequisite for reliability. - Edsger Dijkstra",
 ]
 
-print(random.choice(QUOTES))
+print("Quote of the day:", random.choice(QUOTES))
