@@ -6,4 +6,5 @@ QUOTES = [
     "Simplicity is prerequisite for reliability. - Edsger Dijkstra",
 ]
 
-print(f"Today: {random.choice(QUOTES)}")
+print("Quote of the day:", random.choice(QUOTES))
+>>>>>>> quote-banner
