@@ -100,6 +100,27 @@ git branch -a                    # list all branches (local and on GitHub)
 
 ---
 
+## 4b. Tidy up old branches on GitHub
+
+`git branch -d` only deletes your **local** copy. The copy on GitHub stays until you delete it. Merging a pull request does not remove it either, unless you click **Delete branch** on the PR page or use `--delete-branch`. A branch lives in two places, so delete it in both.
+
+```bash
+git fetch --prune                       # refresh your view of GitHub and forget branches already deleted there
+git branch -r                           # list the branches on GitHub (origin/...)
+git branch -r --merged origin/main      # list only branches already merged into main (safe to delete)
+git push origin --delete BRANCH-NAME    # delete one branch on GitHub (repeat for each old branch)
+git fetch --prune                       # clean up your local view again
+git branch -a                           # should now show just main and origin/main
+```
+
+You can also use the website: open the repo, click **Branches**, and use the bin icon next to each one. Never delete `main`.
+
+If a branch is not in the `--merged` list, check it before deleting: it has commits that never reached `main`.
+
+To stop old branches piling up, turn on automatic cleanup: repo **Settings**, **General**, **Pull Requests**, then tick **Automatically delete head branches**. GitHub then removes a branch as soon as its pull request is merged.
+
+---
+
 ## 5. Trash it and rebuild it
 
 Make a mess:
@@ -299,6 +320,9 @@ These cannot be undone. Pause and check first.
 | Branch | `git merge --abort` | Cancels a merge that went wrong |
 | Branch | `git branch -d NAME` | Deletes a finished local branch |
 | Branch | `git push origin --delete NAME` | Deletes a branch on GitHub |
+| Branch | `git fetch --prune` | Refreshes your view of GitHub and forgets branches already deleted there |
+| Branch | `git branch -r` | Lists the branches on GitHub |
+| Branch | `git branch -r --merged origin/main` | Lists GitHub branches already merged into main (safe to delete) |
 | Pull request | `gh pr create --fill` | Opens a pull request |
 | Pull request | `gh pr merge --merge --delete-branch` | Merges the pull request and deletes its branch |
 | Undo | `git restore .` | Puts tracked files back to the last commit |
