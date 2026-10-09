@@ -7,4 +7,3 @@ QUOTES = [
 ]
 
 print("Quote of the day:", random.choice(QUOTES))
->>>>>>> quote-banner
