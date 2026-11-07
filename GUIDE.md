@@ -252,6 +252,84 @@ Then the normal loop: `git add LICENSE`, `git commit`, `git push -u origin add-l
 
 ---
 
+## 9b. Tags and releases (mark versions)
+
+A **tag** is a permanent label on one commit, like `v1.0`. Branches move forward as you commit, but a tag stays put, so you can always get back to that exact version.
+
+**Tag the current version** (do this on `main`, after merging):
+
+```bash
+git switch main
+git pull                                  # latest main
+git status                                # should be clean
+git tag                                   # list existing tags
+git tag -a v1.0 -m 'First release'        # label the current commit (-a = annotated, -m = message)
+git show v1.0                             # check the tag points at the right commit
+git push origin v1.0                      # upload it (git push alone does NOT send tags)
+git push origin --tags                    # or upload every tag at once
+```
+
+**Make a change, then tag a second version:**
+
+```bash
+git switch -c more-quotes                 # normal branch loop first
+# edit, then: git add, git commit, git push -u origin more-quotes, gh pr create --fill
+# merge the pull request on GitHub, then:
+git switch main
+git pull
+git tag -a v1.1 -m 'More quotes'
+git push origin v1.1
+git diff v1.0 v1.1                        # compare the two versions
+git log --oneline --decorate              # tags show in brackets next to their commits
+```
+
+**Tag an older commit:**
+
+```bash
+git log --oneline                         # find the commit hash
+git tag -a v0.1 -m 'Early version' HASH   # tag that commit instead of the current one
+git push origin v0.1
+```
+
+**Look at an old version, then come back:**
+
+```bash
+git switch --detach v1.0                  # see the project exactly as it was at v1.0
+git switch main                           # return to the present
+```
+
+Git warns about a "detached HEAD". That's fine for looking around, but don't commit there.
+
+**Rebuild from a tag:**
+
+```bash
+cd ..
+rm -rf quotes
+git clone --branch v1.0 https://github.com/YOUR-USERNAME/quotes.git   # clone at the v1.0 version
+cd quotes
+git switch main                           # then move to the latest if you want
+```
+
+**Make a GitHub release (optional):**
+
+```bash
+gh release create v1.1 --title 'v1.1' --generate-notes   # a Releases entry, notes built from merged pull requests
+```
+
+**Delete tags and releases** (tags live in two places, like branches):
+
+```bash
+git tag -d v1.0                           # delete locally
+git push origin --delete v1.0             # delete on GitHub
+gh release delete v1.1 --yes              # delete a release, if you made one
+```
+
+Version numbers usually look like `v1.2.3` (major.minor.patch): bump the last number for small fixes, the middle for new features, the first for big changes.
+
+**"Dubious ownership" error:** if git says `detected dubious ownership in repository`, the folder belongs to a different Linux user (for example you created it as root and are now a normal user). Either switch back to the user who created it, or fix the owner with `sudo chown -R "$USER":"$USER" /path/to/quotes`. Stick to one user for the whole practice.
+
+---
+
 ## 10. Check your login, log out, start again
 
 ```bash
@@ -335,4 +413,14 @@ These cannot be undone. Pause and check first.
 | Stash | `git stash pop` / `git stash clear` | Restores the newest / deletes all |
 | Ignore | `git rm --cached FILE` | Stops tracking a file without deleting it |
 | License | `gh api licenses/KEY --jq .body > LICENSE` | Fetches a license (`mit`, `apache-2.0`, `gpl-3.0`) |
+| Tags | `git tag` | Lists tags |
+| Tags | `git tag -a v1.0 -m 'msg'` | Creates an annotated tag on the current commit |
+| Tags | `git push origin v1.0` | Uploads one tag to GitHub |
+| Tags | `git push origin --tags` | Uploads all tags |
+| Tags | `git show v1.0` | Shows the tag's message and commit |
+| Tags | `git diff v1.0 v1.1` | Compares two tagged versions |
+| Tags | `git switch --detach v1.0` | Looks at the project as it was at that tag |
+| Tags | `git clone --branch v1.0 URL` | Clones the project at a tagged version |
+| Tags | `git tag -d v1.0` / `git push origin --delete v1.0` | Deletes a tag locally / on GitHub |
+| Release | `gh release create v1.1 --generate-notes` | Makes a GitHub release for a tag |
 | Wipe | `gh repo delete USER/NAME --yes` | Deletes the repo on GitHub |
